@@ -1,0 +1,55 @@
+﻿@if (IsWeb)
+{
+    <RadzenFormField Text="Photo">
+        <InputFile OnChange="@LoadFiles" />
+    </RadzenFormField>
+}
+else
+{
+    <RadzenButton Click="SelectPhoto">Upload photo</RadzenButton>
+}
+
+@code {
+
+    [Parameter]
+    public bool IsWeb { get; set; } = true;
+
+    [Parameter]
+    public EventCallback<PhotoModel> PhotoSelected { get; set; }
+
+    private async Task SelectPhoto()
+    {
+#if IOS || ANDROID || MACCATALYST
+        var result = await MediaPicker.Default.PickPhotoAsync();
+        var stream = await result.OpenReadAsync();
+
+        var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+
+        await PhotoSelected.InvokeAsync(new PhotoModel()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Bytes = memoryStream.ToArray(),
+            Filename = Path.GetFileName(result.FileName)
+        });
+#endif
+
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        var stream = e.File.OpenReadStream();
+        var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+
+        await PhotoSelected.InvokeAsync(new PhotoModel()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Bytes = memoryStream.ToArray(),
+            Filename = Path.GetFileName(e.File.Name)
+        });
+
+
+    }
+}
+

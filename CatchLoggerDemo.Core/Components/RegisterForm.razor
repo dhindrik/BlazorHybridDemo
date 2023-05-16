@@ -1,0 +1,75 @@
+﻿@inject ICatchService CatchService
+@inject IPlatformInfoProvider PlatformInfo
+
+<EditForm @ref="@Form" Model="@FormModel" OnValidSubmit="Save">
+    <RadzenStack Orientation="Orientation.Vertical" AlignItems="AlignItems.End">
+        <RadzenFormField Text="Type of fish">
+            <RadzenTextBox @bind-Value="@FormModel.Fish" />
+        </RadzenFormField>
+        <RadzenFormField Text="Weight (kg)">
+            <RadzenNumeric @bind-Value="@FormModel.Weight" />
+        </RadzenFormField>
+        <RadzenFormField Text="Length (cm)">
+            <RadzenNumeric @bind-Value="@FormModel.Length" />
+        </RadzenFormField>
+        <RadzenFormField Text="Note">
+            <RadzenTextArea @bind-Value="@FormModel.Note" />
+        </RadzenFormField>
+
+        <PhotoSelector IsWeb="@IsWeb" PhotoSelected="@LoadFiles" />
+
+        @foreach(var photo in FormModel.Photos)
+            {
+                <img src="@(GetImageString(photo))" style="width:300px" />
+            }
+
+        <RadzenButton Text="Save" ButtonType="ButtonType.Submit" />
+
+    </RadzenStack>
+</EditForm>
+@code {
+    private EditForm Form { get; set; } = null!;
+    private AddFormModel FormModel { get; set; } = new();
+
+    private bool IsWeb => PlatformInfo.TypeOfPlatform == TypeOfPlatform.Web;
+
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private async Task LoadFiles(PhotoModel photo)
+    {
+        FormModel.Photos.Add(photo);
+    }
+
+    private async Task Save()
+    {
+        await CatchService.Save(new CatchModel()
+        {
+            Id = Guid.NewGuid().ToString(),
+            Fish = FormModel.Fish!,
+            Weight = FormModel.Weight,
+            Length = FormModel.Length,
+            Note = FormModel.Note,
+            Photos = FormModel.Photos
+        });
+
+        FormModel = new();
+    }
+        private string GetImageString(PhotoModel photo)
+        {
+            if (photo.Bytes == null)
+            {
+                return string.Empty;
+            }
+
+            var base64string = Convert.ToBase64String(photo.Bytes);
+            var extension = Path.GetExtension(photo.Filename).Replace(".", string.Empty);
+
+            return $"data:image/{extension};base64, {base64string}";
+        }
+
+}

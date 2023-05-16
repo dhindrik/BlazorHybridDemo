@@ -2,6 +2,8 @@
 
 global using CatchLoggerDemo.Web.Models;
 global using CatchLoggerDemo.Web.Services;
+using CatchLoggerDemo.Core.Helpers;
+using CatchLoggerDemo.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +12,9 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddSingleton<ICatchService, CatchService>();
+
+builder.Services.AddSingleton<IFilePathProvider, WebFilePathProvider>();
+builder.Services.AddSingleton<IPlatformInfoProvider, WebPlatformInfoProvider>();
 
 var app = builder.Build();
 

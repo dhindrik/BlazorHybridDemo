@@ -9,7 +9,7 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
   <ItemGroup>
-    <PackageReference Include="Radzen.Blazor" Version="4.10.1" />
+    <PackageReference Include="Radzen.Blazor" Version="4.10.4" />
     <PackageReference Include="InterfaceGenerator" Version="1.0.13">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -17,14 +17,11 @@
     <PackageReference Include="LiteDB" Version="5.0.16" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Services\" />
     <None Remove="Pages\RegisterCatch.razor.css" />
-    <None Remove="Models\" />
-    <None Remove="Entities\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Services\" />
-    <Folder Include="Models\" />
-    <Folder Include="Entities\" />
+    <ProjectReference Include="..\CatchLoggerDemo.Core\CatchLoggerDemo.Core.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
   </ItemGroup>
 </Project>
